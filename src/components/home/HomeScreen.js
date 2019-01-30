@@ -10,6 +10,7 @@ import FeaturedProducts from './FeaturedProducts';
 import NavigationService from '../../navigation/NavigationService';
 
 class HomeScreen extends Component {
+
   static navigationOptions = {
     title: 'Magento React Native',
     headerBackTitle: ' ',
@@ -25,7 +26,13 @@ class HomeScreen extends Component {
 
   static defaultProps = {
     slider: [],
+    gridView: true,
+    btnText: 'Show List'
   };
+  constructor() {
+    super();
+    this.state = { gridView: true, btnText: 'Show List' };
+  }
 
   componentWillMount() {
     this.props.getHomeData();
@@ -37,6 +44,16 @@ class HomeScreen extends Component {
       title: product.name
     });
   };
+
+  changeView = () => {
+    this.setState({ gridView: !this.state.gridView }, () => {
+         if (this.state.gridView) {
+           this.setState({ btnText: 'Show List' });
+         } else {
+           this.setState({ btnText: 'Show Grid' });
+         }
+     });
+   }
 
   allCategories = () => {
     this.props.navigation.navigate(NAVIGATION_CATEGORY_TREE_PATH);
@@ -62,6 +79,8 @@ class HomeScreen extends Component {
         {this.renderFeatured()}
         <View style={styles.button} >
           <Button title="All Categories" onPress={this.allCategories} />
+          <View style={{ paddingTop: 5 }} />
+          <Button title={this.state.btnText} onPress={this.changeView} />
         </View>
       </ScrollView>
     );

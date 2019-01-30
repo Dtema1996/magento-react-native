@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, ListView, Text } from 'react-native';
-import { getProductsForCategoryOrChild } from '../../actions/index';
+import { View, FlatList, Text } from 'react-native';
+import { getProductsForCategoryOrChild } from '../../actions';
 import ProductListItem from './ProductListItem';
 import { Spinner } from '../common';
 
@@ -12,14 +12,7 @@ class ProductList extends Component {
 	});
 
 	componentWillMount() {
-		if (this.props.products) {
-			this.createDataSource(this.props);
-		}
 		this.props.getProductsForCategoryOrChild(this.props.category);
-	}
-
-	componentWillReceiveProps(nextProps) {
-		this.createDataSource(nextProps);
 	}
 
 	onEndReached() {
@@ -35,15 +28,7 @@ class ProductList extends Component {
 		}
 	}
 
-	createDataSource({ products }) {
-		const ds = new ListView.DataSource({
-			rowHasChanged: (r1, r2) => r1 !== r2
-		});
-
-		this.dataSource = ds.cloneWithRows(products);
-	}
-
-	renderRow(product) {
+	renderItem(product) {
 		return <ProductListItem product={product} />;
 	}
 
@@ -59,14 +44,14 @@ class ProductList extends Component {
     }
 
 		if (this.props.products.length) {
+			console.log('done');
 			return (
-					<ListView
-							enableEmptySections
-							dataSource={this.dataSource}
-							renderRow={this.renderRow}
+					<FlatList
+							data={this.props.products}
+							renderItem={this.renderItem}
 							onEndReached={this.onEndReached.bind(this)}
 							onEndReachedThreshold={10}
-							renderFooter={this.renderFooter.bind(this)}
+							ListFooterComponent={this.renderFooter.bind(this)}
 					/>
 			);
 		}
