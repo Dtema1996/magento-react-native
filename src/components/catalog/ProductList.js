@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, FlatList, Text } from 'react-native';
+import { View, FlatList, Text, Button } from 'react-native';
 import { getProductsForCategoryOrChild } from '../../actions';
 import ProductListItem from './ProductListItem';
 import { Spinner } from '../common';
@@ -10,6 +10,11 @@ class ProductList extends Component {
 		title: navigation.state.params.title.toUpperCase(),
 		headerBackTitle: ' '
 	});
+
+	constructor() {
+    super();
+    this.state = { gridView: true, btnText: 'Show List' };
+  }
 
 	componentWillMount() {
 		this.props.getProductsForCategoryOrChild(this.props.category);
@@ -28,8 +33,18 @@ class ProductList extends Component {
 		}
 	}
 
+	changeView = () => {
+    this.setState({ gridView: !this.state.gridView }, () => {
+      if (this.state.gridView) {
+        this.setState({ btnText: 'Show List' });
+      } else {
+        this.setState({ btnText: 'Show Grid' });
+      }
+    });
+  }
+
 	renderItem(product) {
-		return <ProductListItem product={product} />;
+		return <ProductListItem product={product.item} />;
 	}
 
 	renderFooter() {
@@ -44,15 +59,23 @@ class ProductList extends Component {
     }
 
 		if (this.props.products.length) {
-			console.log('done');
 			return (
-					<FlatList
-							data={this.props.products}
-							renderItem={this.renderItem}
-							onEndReached={this.onEndReached.bind(this)}
-							onEndReachedThreshold={10}
-							ListFooterComponent={this.renderFooter.bind(this)}
+				<View>
+					<Button
+						title={this.state.btnText}
+						onPress={this.changeView}
 					/>
+					<FlatList
+						key={(this.state.gridView) ? 1 : 0}
+						numColumns={this.state.gridView ? 2 : 1}
+						data={this.props.products}
+						renderItem={this.renderItem}
+						keyExtractor={(item, index) => index.toString()}
+						onEndReached={this.onEndReached.bind(this)}
+						onEndReachedThreshold={10}
+						ListFooterComponent={this.renderFooter.bind(this)}
+					/>
+				</View>
 			);
 		}
 
