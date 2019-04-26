@@ -30,6 +30,7 @@ export const MAGENTO_ERROR_MESSAGE_CART_ORDER = 'magento_error_massage_cart_orde
 export const MAGENTO_REMOVE_FROM_CART_LOADING = 'magento_remove_from_cart_loading';
 export const MAGENTO_REMOVE_FROM_CART = 'magento_remove_from_cart';
 export const MAGENTO_GET_FILTERED_PRODUCTS = 'magento_get_filtered_products';
+export const MAGENTO_SET_FILTER_PARAMS = 'MAGENTO_SET_FILTER_PARAMS';
 
 export const NAVIGATION_GO_TO_SCREEN = 'navigation_go_to_screen';
 

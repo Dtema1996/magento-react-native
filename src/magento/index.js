@@ -194,7 +194,8 @@ class Magento {
     }
 
     if (typeof page !== 'undefined') {
-      query += `searchCriteria[currentPage]=${page}&`;
+      const currentPage = parseInt(page / pageSize, 10) + 1;
+      query += `searchCriteria[currentPage]=${currentPage}&`;
     }
 
     if (typeof pageSize !== 'undefined') {

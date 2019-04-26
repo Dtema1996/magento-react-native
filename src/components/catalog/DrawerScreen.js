@@ -6,7 +6,7 @@ import {
   TextInput,
 } from 'react-native';
 import { Text } from 'react-native-elements';
-import { getFilteredProducts } from '../../actions';
+import { getFilteredProducts, getProductsForCategoryOrChild, setFilterParams, } from '../../actions';
 import { Button } from '../common';
 
 
@@ -22,7 +22,43 @@ class DrawerScreen extends Component {
   };
 
   onApplyPressed = () => {
-    this.props.getFilteredProducts({
+    const { setFilterParams, getProductsForCategoryOrChild, getFilteredProducts, navigation } = this.props;
+    const { maxValue, minValue } = this.state;
+    if (maxValue === '' && minValue === '') {
+      getProductsForCategoryOrChild(this.props.category.current.category);
+      return navigation.closeDrawer();
+    }
+    if (maxValue === '' || minValue !== '') {
+      setFilterParams({ minValue });
+      getFilteredProducts({
+        page: 1,
+        filter: {
+          category_id: this.props.categoryId,
+          price: {
+            condition: 'gteq',
+            value: `${this.state.minValue}`,
+          }
+        }
+      });
+      return navigation.closeDrawer();
+    }
+    if (maxValue !== '' || minValue === '') {
+      setFilterParams({ maxValue });
+      getFilteredProducts({
+        page: 1,
+        filter: {
+          category_id: this.props.categoryId,
+          price: {
+            condition: 'lteq',
+            value: `${this.state.maxValue}`,
+          }
+        }
+      });
+      return navigation.closeDrawer();
+    }
+    setFilterParams({ maxValue, minValue });
+
+    getFilteredProducts({
       page: 1,
       filter: {
         category_id: this.props.categoryId,
@@ -32,7 +68,7 @@ class DrawerScreen extends Component {
         }
       }
     });
-    this.props.navigation.closeDrawer();
+    navigation.closeDrawer();
   };
 
   render() {
@@ -119,7 +155,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = ({ category }) => {
   const categoryId = category.current && category.current.category ? category.current.category.id : null;
-  return { categoryId };
+  return { categoryId, category };
 };
 
-export default connect(mapStateToProps, { getFilteredProducts })(DrawerScreen);
+export default connect(mapStateToProps, { getFilteredProducts, getProductsForCategoryOrChild, setFilterParams })(DrawerScreen);

@@ -1,12 +1,12 @@
 import { getPriceFromChildren } from '../helper/product';
 import {
-	MAGENTO_CURRENT_CATEGORY,
-	MAGENTO_GET_CATEGORY_PRODUCTS,
-	MAGENTO_UPDATE_CONF_PRODUCT,
-	MAGENTO_LOAD_MORE_CATEGORY_PRODUCTS,
+  MAGENTO_CURRENT_CATEGORY,
+  MAGENTO_GET_CATEGORY_PRODUCTS,
+  MAGENTO_UPDATE_CONF_PRODUCT,
+  MAGENTO_LOAD_MORE_CATEGORY_PRODUCTS,
   MAGENTO_UPDATE_CATEGORY_PRODUCTS,
   MAGENTO_UPDATE_REFRESHING_CATEGORY_PRODUCTS,
-  MAGENTO_GET_FILTERED_PRODUCTS,
+  MAGENTO_GET_FILTERED_PRODUCTS, MAGENTO_SET_FILTER_PARAMS,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -15,6 +15,7 @@ const INITIAL_STATE = {
 	totalCount: false,
 	loadingMore: false,
   refreshing: false,
+  params: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -34,6 +35,12 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         products: action.payload.items,
         totalCount: action.payload.total_count
+      };
+    }
+    case MAGENTO_SET_FILTER_PARAMS: {
+      return {
+        ...state,
+        params: action.payload,
       };
     }
 

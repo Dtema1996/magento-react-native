@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { ProductListItem, Spinner } from './';
 import Sizes from '../../constants/Sizes';
-import { NAVIGATION_DRAWER_SCREEN, NAVIGATION_FILTER_DRAWER_SCREEN } from '../../navigation/routes';
 
 class ProductList extends Component {
   constructor(props) {
@@ -68,13 +67,13 @@ class ProductList extends Component {
 
   renderFilter = () => {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, alignItems: 'flex-end' }}>
         <TouchableOpacity
           style={styles.iconStyle}
-          onPress={() => this.props.navigation.toggleFilterDrawer()}
+          onPress={() => this.props.navigation.toggleFilterDrawer(this.props.category)}
         >
           <View style={styles.iconWrapper}>
-            <Icon name='md-cog' type="ionicon" />
+            <Icon name='md-options' type="ionicon" />
           </View>
         </TouchableOpacity>
       </View>
@@ -83,7 +82,7 @@ class ProductList extends Component {
 
   renderHeader = () => {
     return (
-      <View style={{ alignItems: 'flex-end' }}>
+      <View style={styles.headerStyle}>
         {this.renderFilter()}
         <TouchableOpacity
           style={styles.iconStyle}
@@ -95,7 +94,7 @@ class ProductList extends Component {
         </TouchableOpacity>
       </View>
     );
-  }
+  };
 
   renderFooter = () => {
     if (this.props.canLoadMoreContent) {
@@ -103,7 +102,7 @@ class ProductList extends Component {
     }
 
     return null;
-  }
+  };
 
   renderContent = () => {
     const { products, onEndReached, refreshControl } = this.props;
@@ -115,24 +114,29 @@ class ProductList extends Component {
 
     if (this.props.products.length) {
       return (
-        <FlatList
-          refreshControl={refreshControl}
-          data={products}
-          renderItem={gridColumnsValue ? this.renderItemRow : this.renderItemColumn}
-          keyExtractor={(item, index) => index.toString()}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0}
-          ListHeaderComponent={this.renderHeader}
-          ListFooterComponent={this.renderFooter}
-          numColumns={gridColumnsValue ? 1 : 2}
-          key={(gridColumnsValue) ? 'ONE COLUMN' : 'TWO COLUMNS'}
-        />
+        <View style={{ flex: 1 }}>
+          {this.renderHeader()}
+          <FlatList
+            refreshControl={refreshControl}
+            data={products}
+            renderItem={gridColumnsValue ? this.renderItemRow : this.renderItemColumn}
+            keyExtractor={(item, index) => index.toString()}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0}
+            ListFooterComponent={this.renderFooter}
+            numColumns={gridColumnsValue ? 1 : 2}
+            key={(gridColumnsValue) ? 'ONE COLUMN' : 'TWO COLUMNS'}
+          />
+        </View>
       );
     }
     if (!this.props.searchIndicator) {
       return (
-        <View style={styles.notFoundTextWrap}>
-          <Text style={styles.notFoundText}>No products found</Text>
+        <View style={{ flex : 1 }}>
+          {this.renderHeader()}
+          <View style={styles.notFoundTextWrap}>
+            <Text style={styles.notFoundText}>No products found</Text>
+          </View>
         </View>
       );
     }
@@ -200,6 +204,11 @@ const styles = {
   columnContainerStyle: {
     flexDirection: 'column',
     borderBottomWidth: 0,
+  },
+  headerStyle: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+
   },
 };
 

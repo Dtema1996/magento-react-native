@@ -44,6 +44,7 @@ import {
   MAGENTO_UPDATE_REFRESHING_CART_ITEM_PRODUCT,
   MAGENTO_ERROR_MESSAGE_CART_ORDER,
   MAGENTO_GET_FILTERED_PRODUCTS,
+  MAGENTO_SET_FILTER_PARAMS,
 } from './types';
 
 export const initMagento = () => {
@@ -531,6 +532,11 @@ export const removeFromCartLoading = isLoading => {
     payload: isLoading,
   };
 };
+
+export const setFilterParams = params => ({
+  type: MAGENTO_SET_FILTER_PARAMS,
+  payload: params,
+});
 
 export const getFilteredProducts = ({ page, pageSize, filter }) => {
   return async dispatch => {

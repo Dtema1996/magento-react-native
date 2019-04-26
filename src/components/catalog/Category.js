@@ -9,6 +9,7 @@ import {
   getProductsForCategoryOrChild,
   setCurrentProduct,
   updateProductsForCategoryOrChild,
+  getFilteredProducts,
 } from '../../actions';
 import { ProductList } from '../common/ProductList';
 import NavigationService from '../../navigation/NavigationService';
@@ -35,7 +36,46 @@ class Category extends Component {
   };
 
   onRefresh = () => {
-    this.props.updateProductsForCategoryOrChild(this.props.category, true);
+    const { params } = this.props;
+    if (params) {
+      if (params.maxValue && !params.minValue) {
+        this.props.getFilteredProducts({
+          page: 1,
+          filter: {
+            category_id: this.props.categoryId,
+            price: {
+              condition: 'lteq',
+              value: params.maxValue,
+            }
+          }
+        });
+        return;
+      } else if (params.minValue && !params.maxValue) {
+        this.props.getFilteredProducts({
+          page: 1,
+          filter: {
+            category_id: this.props.categoryId,
+            price: {
+              condition: 'gteq',
+              value: params.minValue,
+            }
+          }
+        });
+        return;
+      }
+      this.props.getFilteredProducts({
+        page: 1,
+        filter: {
+          category_id: this.props.categoryId,
+          price: {
+            condition: 'from,to',
+            value: `${params.minValue},${params.maxValue}`,
+          }
+        }
+      });
+    } else {
+      this.props.updateProductsForCategoryOrChild(this.props.category, true);
+    }
   };
 
 	onEndReached = () => {
@@ -43,11 +83,50 @@ class Category extends Component {
 			canLoadMoreContent,
 			loadingMore,
 			products,
-			category
+			category,
+      params,
 		} = this.props;
 
 		if (!loadingMore && canLoadMoreContent) {
-			this.props.getProductsForCategoryOrChild(category, products.length);
+		  if (params) {
+		    if (params.maxValue && !params.minValue) {
+          this.props.getFilteredProducts({
+            page: products.length,
+            filter: {
+              category_id: this.props.categoryId,
+              price: {
+                condition: 'lteq',
+                value: params.maxValue,
+              }
+            }
+          });
+          return;
+        } else if (params.minValue && !params.maxValue) {
+          this.props.getFilteredProducts({
+            page: products.length,
+            filter: {
+              category_id: this.props.categoryId,
+              price: {
+                condition: 'gteq',
+                value: params.minValue,
+              }
+            }
+          });
+          return;
+        }
+        this.props.getFilteredProducts({
+          page: products.length,
+          filter: {
+            category_id: this.props.categoryId,
+            price: {
+              condition: 'from,to',
+              value: `${params.minValue},${params.maxValue}`,
+            }
+          }
+        });
+      } else {
+			  this.props.getProductsForCategoryOrChild(category, products.length);
+      }
 		}
 	};
 
@@ -126,14 +205,23 @@ const styles = {
 
 const mapStateToProps = state => {
 	const { category } = state.category.current;
-	const { products, totalCount, loadingMore, refreshing } = state.category;
+	const { products, totalCount, loadingMore, refreshing, params } = state.category;
 	const canLoadMoreContent = products.length < totalCount;
 
-	return { category, products, totalCount, canLoadMoreContent, loadingMore, refreshing };
+	return {
+	  category,
+    products,
+    totalCount,
+    canLoadMoreContent,
+    loadingMore,
+    refreshing,
+    params,
+	};
 };
 
 export default connect(mapStateToProps, {
   getProductsForCategoryOrChild,
   updateProductsForCategoryOrChild,
   setCurrentProduct,
+  getFilteredProducts,
 })(Category);
